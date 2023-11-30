@@ -5,9 +5,15 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"github.com/joho/godotenv"
 )
 
 func GenerateRefreshToken(userID string, Role string) (string, error) {
+
+	err := godotenv.Load()
+	if err != nil {
+		return "", err
+	}
 	// Create a new token
 	token := jwt.New(jwt.SigningMethodHS256)
 
@@ -30,10 +36,14 @@ func GenerateRefreshToken(userID string, Role string) (string, error) {
 
 func GenerateAccessToken(username, role string) (string, error) {
 	// Set up the claims
+	err := godotenv.Load()
+	if err != nil {
+		return "", err
+	}
 	claims := jwt.MapClaims{
 		"sub":  username,
 		"role": role,
-		"exp":  time.Now().Add(time.Minute * 15).Unix(), // Set expiration time (e.g., 1 hour)
+		"exp":  time.Now().Add(time.Minute * 15).Unix(),
 	}
 
 	// Create the token

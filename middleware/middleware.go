@@ -8,10 +8,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	"github.com/joho/godotenv"
 )
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		err := godotenv.Load()
+		if err != nil {
+			return
+		}
 		// Get the Authorization header
 		authHeader := c.GetHeader("Authorization")
 
@@ -53,6 +58,10 @@ func AuthMiddleware() gin.HandlerFunc {
 func AdminMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Get the Authorization header
+		err := godotenv.Load()
+		if err != nil {
+			return 
+		}
 		authHeader := c.GetHeader("Authorization")
 
 		// Check if the Authorization header is present and starts with "Bearer"

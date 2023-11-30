@@ -14,7 +14,13 @@ func main() {
 
 	ctx := context.Background()
 
-	db, err := database.DbConn(ctx)
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Printf("Error loading config: %v", err)
+		panic(err)
+	}
+
+	db, err := database.DbConn(ctx,cfg)
 	if err != nil {
 		log.Printf("Error connecting to database: %v", err)
 		panic(err)

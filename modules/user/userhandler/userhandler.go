@@ -5,8 +5,10 @@ import (
 	"mmoz/crud/modules"
 	"mmoz/crud/modules/user"
 	"mmoz/crud/modules/user/userusecase"
-	"mmoz/crud/validate"
+	"mmoz/crud/pkg/request"
+	"mmoz/crud/pkg/response"
 	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,17 +33,13 @@ func (h *userHandler) GetUserAllUsers(c *gin.Context) {
 
 	users, err := h.userUsecase.GetUserAllUsers()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  http.StatusInternalServerError,
-			"message": "Error getting users",
-		})
+		log.Printf("Error getting all users: %v", err)
+		response.ErrResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status": http.StatusOK,
-		"data":   users,
-	})
+	response.SuccessResponse(c, http.StatusOK, users)
+
 }
 
 func (h *userHandler) CreateUser(c *gin.Context) {
@@ -51,36 +49,25 @@ func (h *userHandler) CreateUser(c *gin.Context) {
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		log.Printf("Error binding json: %v", err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  http.StatusBadRequest,
-			"message": "Error binding json",
-		})
+		response.ErrResponse(c, http.StatusBadRequest, "Error binding json")
 		return
 	}
 
-	err = validate.ValidateStruct(req)
+	err = request.ValidateStruct(req)
 	if err != nil {
 		log.Printf("Error validating struct: %v", err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  http.StatusBadRequest,
-			"message": err.Error(),
-		})
+		response.ErrResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	err = h.userUsecase.CreatePlayer(&req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  http.StatusInternalServerError,
-			"message": err.Error(),
-		})
+		log.Printf("Error creating user: %v", err)
+		response.ErrResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status":  http.StatusOK,
-		"message": "User created",
-	})
+	response.SuccessResponse(c, http.StatusOK, "User created successfully")
 }
 
 func (h *userHandler) GetUserByUsername(c *gin.Context) {
@@ -92,15 +79,11 @@ func (h *userHandler) GetUserByUsername(c *gin.Context) {
 
 	user, err := h.userUsecase.GetUserByUsername(username, token)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  http.StatusInternalServerError,
-			"message": err.Error(),
-		})
+		log.Printf("Error getting user by username: %v", err)
+		response.ErrResponse(c, http.StatusInternalServerError, err.Error())
+
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status": http.StatusOK,
-		"data":   user,
-	})
+	response.SuccessResponse(c, http.StatusOK, user)
 }

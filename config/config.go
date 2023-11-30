@@ -1,6 +1,21 @@
 package config
 
-import "github.com/gin-gonic/gin"
+import (
+	"errors"
+	"log"
+	"os"
+
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+)
+
+type Config struct {
+	DBUser string
+	DBPass string
+	DBHost string
+	DBPort string
+	DBName string
+}
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -16,4 +31,27 @@ func CORSMiddleware() gin.HandlerFunc {
 
 		c.Next()
 	}
+}
+
+func LoadConfig() (*Config, error) {
+	err := godotenv.Load()
+	if err != nil {
+		log.Printf("Error loading .env file: %v", err)
+		return nil, err
+	}
+	config := &Config{
+		DBUser: os.Getenv("DB_USER"),
+		DBPass: os.Getenv("DB_PASS"),
+		DBHost: os.Getenv("DB_HOST"),
+		DBPort: os.Getenv("DB_PORT"),
+		DBName: os.Getenv("DB_NAME"),
+	}
+
+	if config.DBUser == "" || config.DBPass == "" || config.DBHost == "" || config.DBPort == "" || config.DBName == "" {
+		log.Printf("Missing required environment variables %v \n", config)
+		return nil, errors.New("Missing required environment variables")
+
+	}
+	return config, nil
+
 }

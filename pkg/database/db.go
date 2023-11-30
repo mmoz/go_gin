@@ -4,19 +4,17 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"os"
+	"mmoz/crud/config"
 	"time"
 )
 
-func DbConn(pctx context.Context) (*sql.DB, error) {
+func DbConn(pctx context.Context, cfg *config.Config) (*sql.DB, error) {
 
 	ctx, cancel := context.WithTimeout(pctx, 10*time.Second)
 	defer cancel()
 
-	dbUrl := os.Getenv("DB_URL")
-	_ = dbUrl
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", cfg.DBUser, cfg.DBPass, cfg.DBHost, cfg.DBPort, cfg.DBName))
 
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/test")
 	if err != nil {
 		fmt.Println("Error opening database: ", err)
 		return nil, err
