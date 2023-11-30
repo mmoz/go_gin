@@ -33,7 +33,7 @@ func GenerateAccessToken(username, role string) (string, error) {
 	claims := jwt.MapClaims{
 		"sub":  username,
 		"role": role,
-		"exp":  time.Now().Add(time.Hour * 1).Unix(), // Set expiration time (e.g., 1 hour)
+		"exp":  time.Now().Add(time.Minute * 15).Unix(), // Set expiration time (e.g., 1 hour)
 	}
 
 	// Create the token

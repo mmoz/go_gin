@@ -68,6 +68,7 @@ func (r *userRepository) InsertPlayer(req *user.CreateUserReq) error {
 func (r *userRepository) GetUserByUsername(username string) (*user.UserProfileEnt, error) {
 	stmt, err := r.db.Prepare("SELECT * FROM users WHERE username = ?")
 	if err != nil {
+		log.Printf("Error: %v", err)
 		return nil, err
 	}
 	row := stmt.QueryRow(username)
