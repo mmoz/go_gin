@@ -2,12 +2,12 @@ package auth
 
 type (
 	CredentialReq struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
+		Username string `json:"username" validate:"required"`
+		Password string `json:"password" validate:"required"`
 	}
 
 	RefreshTokenReq struct {
-		RefreshToken string `json:"refresh_token"`
+		RefreshToken string `json:"refresh_token" validate:"required"`
 	}
 
 	CredentialRes struct {

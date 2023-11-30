@@ -7,9 +7,9 @@ type (
 	}
 
 	CreateUserReq struct {
-		Username     string `json:"username"`
-		Password     string `json:"password"`
-		Role         string `json:"role"`
+		Username     string `json:"username" validate:"required"`
+		Password     string `json:"password" validate:"required"`
+		Role         string `json:"role" validate:"required"`
 		RefreshToken string `json:"refresh_token,omitempty"`
 	}
 )

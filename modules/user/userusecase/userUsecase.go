@@ -7,7 +7,6 @@ import (
 	"mmoz/crud/modules/user"
 	"mmoz/crud/modules/user/userrepository"
 	"mmoz/crud/utils"
-
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -48,6 +47,7 @@ func (u *userUsecase) GetUserAllUsers() ([]*user.UserProfile, error) {
 }
 
 func (u *userUsecase) CreatePlayer(req *user.CreateUserReq) error {
+
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {

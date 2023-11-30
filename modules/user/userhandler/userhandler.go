@@ -5,8 +5,8 @@ import (
 	"mmoz/crud/modules"
 	"mmoz/crud/modules/user"
 	"mmoz/crud/modules/user/userusecase"
+	"mmoz/crud/validate"
 	"net/http"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -47,6 +47,7 @@ func (h *userHandler) GetUserAllUsers(c *gin.Context) {
 func (h *userHandler) CreateUser(c *gin.Context) {
 
 	var req user.CreateUserReq
+
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		log.Printf("Error binding json: %v", err)
@@ -57,11 +58,21 @@ func (h *userHandler) CreateUser(c *gin.Context) {
 		return
 	}
 
+	err = validate.ValidateStruct(req)
+	if err != nil {
+		log.Printf("Error validating struct: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"message": err.Error(),
+		})
+		return
+	}
+
 	err = h.userUsecase.CreatePlayer(&req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  http.StatusInternalServerError,
-			"message": "Error creating user",
+			"message": err.Error(),
 		})
 		return
 	}
