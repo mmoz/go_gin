@@ -44,7 +44,7 @@ func (h *userHandler) GetUserAllUsers(c *gin.Context) {
 
 func (h *userHandler) CreateUser(c *gin.Context) {
 
-	var req user.CreateUserReq
+	req := new(user.CreateUserReq)
 
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
@@ -60,7 +60,7 @@ func (h *userHandler) CreateUser(c *gin.Context) {
 		return
 	}
 
-	err = h.userUsecase.CreatePlayer(&req)
+	err = h.userUsecase.CreatePlayer(req)
 	if err != nil {
 		log.Printf("Error creating user: %v", err)
 		response.ErrResponse(c, http.StatusInternalServerError, err.Error())

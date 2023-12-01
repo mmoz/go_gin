@@ -12,6 +12,7 @@ type (
 
 	CredentialRes struct {
 		Username     string `json:"username"`
+		Password     string `json:"password,omitempty"`
 		Role         string `json:"role"`
 		RefreshToken string `json:"RefreshToken"`
 		AccessToken  string `json:"AccessToken"`
