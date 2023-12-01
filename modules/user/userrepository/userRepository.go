@@ -10,7 +10,7 @@ import (
 type (
 	UserRepositoryService interface {
 		GetUserAllUsers() ([]*user.UserProfileEnt, error)
-		InsertPlayer(req *user.CreateUserReq) error
+		InsertPlayer(req *user.UserProfileEnt) error
 		GetUserByUsername(username string) (*user.UserProfileEnt, error)
 	}
 
@@ -50,7 +50,7 @@ func (r *userRepository) GetUserAllUsers() ([]*user.UserProfileEnt, error) {
 	return users, nil
 }
 
-func (r *userRepository) InsertPlayer(req *user.CreateUserReq) error {
+func (r *userRepository) InsertPlayer(req *user.UserProfileEnt) error {
 
 	stmt, err := r.db.Prepare("INSERT INTO users (username, password, roles,refreshtoken,istokenactive) VALUES (?, ?, ?, ? ,?)")
 	if err != nil {

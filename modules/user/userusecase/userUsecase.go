@@ -65,7 +65,15 @@ func (u *userUsecase) CreatePlayer(req *user.CreateUserReq) error {
 
 	req.Password = string(hashedPassword)
 
-	err = u.userRepository.InsertPlayer(req)
+	user := &user.UserProfileEnt{
+		Username:      req.Username,
+		Password:      req.Password,
+		Role:          req.Role,
+		RefreshToken:  req.RefreshToken,
+		IsTokenActive: 1,
+	}
+
+	err = u.userRepository.InsertPlayer(user)
 	if err != nil {
 		log.Printf("Error inserting player: %v", err)
 		return errors.New("Error inserting player")
