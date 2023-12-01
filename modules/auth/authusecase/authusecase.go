@@ -28,12 +28,17 @@ func NewAuthUsecase(authrepository authrepository.AuthRepositoryService) AuthUse
 
 func (u *authUsecase) CheckLogin(cres *auth.CredentialReq) (*auth.CredentialRes, error) {
 
-	result, password, err := u.authrepository.CheckCredential(cres)
+	user := &auth.Credential{
+		Username: cres.Username,
+	}
+
+	result, err := u.authrepository.CheckCredential(user)
 	if err != nil {
+		log.Printf("Error checking credential: %v", err)
 		return nil, errors.New("failed to login")
 	}
 	//compare password
-	if err := bcrypt.CompareHashAndPassword([]byte(password), []byte(cres.Password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(cres.Password)); err != nil {
 		log.Printf("Error comparing password: %v", err)
 		return nil, errors.New("Invalid username and password")
 	}

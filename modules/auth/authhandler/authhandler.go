@@ -38,6 +38,7 @@ func (h *authHandler) Login(c *gin.Context) {
 	if err != nil {
 		log.Printf("Error checking login: %v", err)
 		response.ErrResponse(c, http.StatusInternalServerError, err.Error())
+		return
 
 	}
 
