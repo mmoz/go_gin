@@ -28,6 +28,7 @@ func (r *userRepository) GetUserAllUsers() ([]*user.UserProfileEnt, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer stmt.Close()
 	rows, err := stmt.Query()
 	if err != nil {
 		return nil, err
@@ -56,6 +57,7 @@ func (r *userRepository) InsertPlayer(req *user.CreateUserReq) error {
 		log.Printf("Error: %v", err)
 		return err
 	}
+	defer stmt.Close()
 	_, err = stmt.Exec(req.Username, req.Password, req.Role, req.RefreshToken, 1)
 	if err != nil {
 		log.Printf("Error: %v", err)
@@ -71,8 +73,8 @@ func (r *userRepository) GetUserByUsername(username string) (*user.UserProfileEn
 		log.Printf("Error: %v", err)
 		return nil, err
 	}
+	defer stmt.Close()
 	row := stmt.QueryRow(username)
-
 	user := new(user.UserProfileEnt)
 	err = row.Scan(&user.Username, &user.Password, &user.Role, &user.RefreshToken, &user.IsTokenActive)
 	if err != nil {

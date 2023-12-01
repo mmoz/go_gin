@@ -20,7 +20,7 @@ func main() {
 		panic(err)
 	}
 
-	db, err := database.DbConn(ctx,cfg)
+	db, err := database.DbConn(ctx, cfg)
 	if err != nil {
 		log.Printf("Error connecting to database: %v", err)
 		panic(err)

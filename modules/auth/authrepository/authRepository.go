@@ -27,6 +27,7 @@ func (r *authrepository) CheckCredential(cres *auth.CredentialReq) (*auth.Creden
 		log.Printf("Error preparing statement: %v", err)
 		return nil, "", err
 	}
+	defer stmt.Close()
 
 	users := new(auth.CredentialRes)
 	var password string
@@ -36,7 +37,6 @@ func (r *authrepository) CheckCredential(cres *auth.CredentialReq) (*auth.Creden
 		log.Printf("Error scanning row: %v", err)
 		return nil, "", err
 	}
-	
 
 	return &auth.Credential{
 		Username:     users.Username,
