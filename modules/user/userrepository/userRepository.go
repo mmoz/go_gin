@@ -40,7 +40,7 @@ func (r *userRepository) GetUserAllUsers() ([]*user.UserProfileEnt, error) {
 
 	for rows.Next() {
 		user := new(user.UserProfileEnt)
-		err := rows.Scan(&user.Username, &user.Password, &user.Role, &user.RefreshToken, &user.IsTokenActive)
+		err := rows.Scan(&user.ID, &user.Username, &user.Password, &user.Role, &user.RefreshToken, &user.IsTokenActive)
 		if err != nil {
 			log.Printf("Error: %v", err)
 			return nil, err
