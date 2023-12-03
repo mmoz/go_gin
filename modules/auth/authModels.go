@@ -11,6 +11,7 @@ type (
 	}
 
 	CredentialRes struct {
+		ID           string `json:"id,omitempty"`
 		Username     string `json:"username"`
 		Password     string `json:"password,omitempty"`
 		Role         string `json:"role"`

@@ -15,10 +15,10 @@ import (
 func main() {
 	// Database connection parameters
 	dbUsername := "root"
-	dbPassword := "root"
+	dbPassword := "root1234"
 	dbHost := "localhost"
 	dbPort := "3306"
-	dbName := "dbName"
+	dbName := "crud_test"
 
 	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUsername, dbPassword, dbHost, dbPort, dbName)
 

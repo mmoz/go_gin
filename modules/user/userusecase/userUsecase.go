@@ -7,6 +7,8 @@ import (
 	"mmoz/crud/modules/user"
 	"mmoz/crud/modules/user/userrepository"
 	"mmoz/crud/utils"
+
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -48,6 +50,19 @@ func (u *userUsecase) GetUserAllUsers() ([]*user.UserProfile, error) {
 
 func (u *userUsecase) CreatePlayer(req *user.CreateUserReq) error {
 
+	isUnique, err := u.userRepository.IsUniquePlayer(req.Username)
+	if err != nil {
+		log.Printf("Error checking unique username: %v", err)
+		return errors.New("Error checking unique username")
+	}
+
+	if !isUnique {
+		return errors.New("Username already exists")
+	}
+
+	newUUID := uuid.New()
+
+	req.ID = newUUID.String()
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -55,7 +70,7 @@ func (u *userUsecase) CreatePlayer(req *user.CreateUserReq) error {
 		return errors.New("Error hashing password")
 	}
 
-	refreshToken, err := utils.GenerateRefreshToken(req.Username, req.Role)
+	refreshToken, err := utils.GenerateRefreshToken(req.ID, req.Username, req.Role)
 	if err != nil {
 		log.Printf("Error generating refresh token: %v", err)
 		return errors.New("Error generating refresh token")
@@ -66,6 +81,7 @@ func (u *userUsecase) CreatePlayer(req *user.CreateUserReq) error {
 	req.Password = string(hashedPassword)
 
 	user := &user.UserProfileEnt{
+		ID:            req.ID,
 		Username:      req.Username,
 		Password:      req.Password,
 		Role:          req.Role,
@@ -83,18 +99,22 @@ func (u *userUsecase) CreatePlayer(req *user.CreateUserReq) error {
 
 func (u *userUsecase) GetUserByUsername(username string, token *modules.Token) (*user.UserProfile, error) {
 
-	if token.Role != "admin" && token.Username != username {
-		return nil, errors.New("Cannot get other user's profile")
-	}
-
 	ent, err := u.userRepository.GetUserByUsername(username)
 	if err != nil {
 		log.Printf("Error getting user by username: %v", err)
 		return nil, errors.New("Error getting user by username")
 	}
 
+	users := new(user.UserProfile)
+	if token.Role == "admin" {
+		users = &user.UserProfile{
+			Username: ent.Username,
+			Role:     ent.Role,
+		}
+		return users, nil
+	}
+
 	return &user.UserProfile{
 		Username: ent.Username,
-		Role:     ent.Role,
 	}, nil
 }

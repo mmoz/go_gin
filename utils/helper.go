@@ -8,7 +8,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func GenerateRefreshToken(userID string, Role string) (string, error) {
+func GenerateRefreshToken(id string, userName string, Role string) (string, error) {
 
 	err := godotenv.Load()
 	if err != nil {
@@ -19,7 +19,8 @@ func GenerateRefreshToken(userID string, Role string) (string, error) {
 
 	// Set claims
 	claims := token.Claims.(jwt.MapClaims)
-	claims["sub"] = userID
+	claims["id"] = id
+	claims["username"] = userName
 	claims["role"] = Role
 	claims["exp"] = jwt.StandardClaims{ExpiresAt: 0}.ExpiresAt
 
@@ -34,16 +35,17 @@ func GenerateRefreshToken(userID string, Role string) (string, error) {
 	return tokenString, nil
 }
 
-func GenerateAccessToken(username, role string) (string, error) {
+func GenerateAccessToken(id, username, role string) (string, error) {
 	// Set up the claims
 	err := godotenv.Load()
 	if err != nil {
 		return "", err
 	}
 	claims := jwt.MapClaims{
-		"sub":  username,
-		"role": role,
-		"exp":  time.Now().Add(time.Minute * 15).Unix(),
+		"id":       id,
+		"username": username,
+		"role":     role,
+		"exp":      time.Now().Add(time.Minute * 15).Unix(),
 	}
 
 	// Create the token

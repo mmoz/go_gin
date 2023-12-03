@@ -31,19 +31,19 @@ func (r *authrepository) CheckCredential(cres *auth.Credential) (*auth.Credentia
 
 	users := new(auth.Credential)
 
-	err = stmt.QueryRow(cres.Username).Scan(&users.Username, &users.Password, &users.Role, &users.RefreshToken , &users.IsTokenActive)
+	err = stmt.QueryRow(cres.Username).Scan(&users.ID, &users.Username, &users.Password, &users.Role, &users.RefreshToken, &users.IsTokenActive)
 	if err != nil {
 		log.Printf("Error scanning row: %v", err)
 		return nil, err
 	}
 
 	return &auth.Credential{
-		Username:     users.Username,
-		Password:    users.Password,
-		Role:         users.Role,
-		RefreshToken: users.RefreshToken,
+		ID:            users.ID,
+		Username:      users.Username,
+		Password:      users.Password,
+		Role:          users.Role,
+		RefreshToken:  users.RefreshToken,
 		IsTokenActive: users.IsTokenActive,
-
 	}, nil
 
 }

@@ -36,6 +36,7 @@ func (u *authUsecase) CheckLogin(cres *auth.CredentialReq) (*auth.CredentialRes,
 		return nil, errors.New("failed to login")
 	}
 	user := &auth.CredentialRes{
+		ID:           result.ID,
 		Username:     result.Username,
 		Password:     result.Password,
 		Role:         result.Role,
@@ -48,7 +49,7 @@ func (u *authUsecase) CheckLogin(cres *auth.CredentialReq) (*auth.CredentialRes,
 		return nil, errors.New("Invalid username and password")
 	}
 
-	accessToken, err := utils.GenerateAccessToken(user.Username, user.Role)
+	accessToken, err := utils.GenerateAccessToken(user.ID, user.Username, user.Role)
 	if err != nil {
 		log.Printf("Error generating access token: %v", err)
 		return nil, errors.New("Error generating access token")

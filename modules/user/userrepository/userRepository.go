@@ -12,6 +12,7 @@ type (
 		GetUserAllUsers() ([]*user.UserProfileEnt, error)
 		InsertPlayer(req *user.UserProfileEnt) error
 		GetUserByUsername(username string) (*user.UserProfileEnt, error)
+		IsUniquePlayer(username string) (bool, error)
 	}
 
 	userRepository struct {
@@ -52,13 +53,13 @@ func (r *userRepository) GetUserAllUsers() ([]*user.UserProfileEnt, error) {
 
 func (r *userRepository) InsertPlayer(req *user.UserProfileEnt) error {
 
-	stmt, err := r.db.Prepare("INSERT INTO users (username, password, roles,refreshtoken,istokenactive) VALUES (?, ?, ?, ? ,?)")
+	stmt, err := r.db.Prepare("INSERT INTO users (id,username, password, roles,refreshtoken,istokenactive) VALUES (?,?, ?, ?, ? ,?)")
 	if err != nil {
 		log.Printf("Error: %v", err)
 		return err
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec(req.Username, req.Password, req.Role, req.RefreshToken, 1)
+	_, err = stmt.Exec(req.ID, req.Username, req.Password, req.Role, req.RefreshToken, 1)
 	if err != nil {
 		log.Printf("Error: %v", err)
 		return err
@@ -76,11 +77,27 @@ func (r *userRepository) GetUserByUsername(username string) (*user.UserProfileEn
 	defer stmt.Close()
 	row := stmt.QueryRow(username)
 	user := new(user.UserProfileEnt)
-	err = row.Scan(&user.Username, &user.Password, &user.Role, &user.RefreshToken, &user.IsTokenActive)
+	err = row.Scan(&user.ID, &user.Username, &user.Password, &user.Role, &user.RefreshToken, &user.IsTokenActive)
 	if err != nil {
 		log.Printf("Error: %v", err)
 		return nil, errors.New("Failed: User not found")
 	}
 
 	return user, nil
+}
+
+func (r *userRepository) IsUniquePlayer(username string) (bool, error) {
+	stmt, err := r.db.Prepare("SELECT * FROM users WHERE username = ?")
+	if err != nil {
+		log.Printf("Error: %v", err)
+		return false, err
+	}
+	defer stmt.Close()
+	row := stmt.QueryRow(username)
+	user := new(user.UserProfileEnt)
+	err = row.Scan(&user.Username, &user.Password, &user.Role, &user.RefreshToken, &user.IsTokenActive)
+	if err == sql.ErrNoRows {
+		return true, nil
+	}
+	return false, nil
 }

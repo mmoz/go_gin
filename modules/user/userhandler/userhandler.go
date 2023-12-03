@@ -72,16 +72,14 @@ func (h *userHandler) CreateUser(c *gin.Context) {
 
 func (h *userHandler) GetUserByUsername(c *gin.Context) {
 
-	username := c.Param("username")
 	token := new(modules.Token)
-	token.Username, _ = c.Get("user")
+	username := c.Param("username")
 	token.Role, _ = c.Get("role")
 
 	user, err := h.userUsecase.GetUserByUsername(username, token)
 	if err != nil {
 		log.Printf("Error getting user by username: %v", err)
-		response.ErrResponse(c, http.StatusInternalServerError, err.Error())
-
+		response.ErrResponse(c, http.StatusForbidden, err.Error())
 		return
 	}
 
